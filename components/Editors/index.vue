@@ -8,8 +8,8 @@
 import { useEditor, EditorContent } from '@tiptap/vue-3';
 import StarterKit from '@tiptap/starter-kit';
 import { ClickableSpan } from './marks/ClickableSpan'; // 确保路径正确
-import { HighlightNode } from './nodes/HighLights'; // 确保路径正确vue'
-import { highlights } from './data/highlights';
+// import { HighlightNode } from './nodes/HighLights'; // 确保路径正确vue'
+import { highlights } from './data/highlights'; // 需要highlights的数据
 
 const props = defineProps({
   modelValue: String,
@@ -21,17 +21,17 @@ const editor = useEditor({
   content: props.modelValue,
   onUpdate: ({ editor }) => {
     emit('update:modelValue', editor.getHTML());
-        // 动态应用高亮逻辑
-        applyHighlights(editor);
+    // 动态应用高亮逻辑
+    applyHighlights(editor);
   },
   extensions: [
     StarterKit,
-    HighlightNode,
-    ClickableSpan,
+    // HighlightNode, // 节点高亮
+    ClickableSpan, // 点击事件
   ],
   editorProps: {
     attributes: {
-      class: 'border border-gray-400 p-4 mx-auto focus:outline-none min-h-[12rem]',
+      class: 'border border-gray-400 p-4 mx-auto focus:outline-none min-h-[12rem]', // 定义文本库样式
       contenteditable: 'true', // 确保编辑器可编辑
     },
   },
@@ -53,40 +53,49 @@ const applyHighlights = (editor) => {
         const from = pos + start; // 匹配文本的起始位置
         const to = from + text.length; // 匹配文本的结束位置
 
-        textNodes.push({ from, to, suggestion,text });
+        textNodes.push({ from, to, suggestion, text });
         console.log('text:', text);
         console.log('suggestion:', suggestion);
-        console.log(from,to);
-        
+        console.log(from, to);
+
       }
     });
   });
 
   console.log('textNodes:', textNodes.length);
-  
-    // 遍历 textNodes，对其使用自定义的 span 进行包裹
-    textNodes.reverse().forEach(({ from, to, suggestion }) => {
+
+  // 遍历 textNodes，对其使用自定义的 span 进行包裹
+  textNodes.reverse().forEach(({ from, to, suggestion }) => {
     // 使用 ClickableSpan 包裹匹配的文本
     editor.chain()
       .setTextSelection({ from, to }) // 选中匹配的文本
-      .setMark('clickableSpan',{suggestion}) // 使用自定义的 ClickableSpan 标记
+      .setMark('clickableSpan', { suggestion }) // 使用自定义的 ClickableSpan 标记
       .run();
   });
-}; 
+};
 
 </script>
 
 <style>
 .clickable-span {
-  cursor: pointer; /* 添加鼠标指针样式 */
-  background-color: #FDE9A4; /* 添加背景色 */
-  padding: 2px 4px; /* 添加内边距 */
-  border-radius: 4px; /* 添加圆角 */
+  cursor: pointer;
+  /* 添加鼠标指针样式 */
+  background-color: #FDE9A4;
+  /* 添加背景色 */
+  padding: 2px 4px;
+  /* 添加内边距 */
+  border-radius: 4px;
+  /* 添加圆角 */
 }
+
 .highlight {
-  background-color: #FDE9A4; /* 高亮背景色 */
-  cursor: pointer; /* 鼠标指针样式 */
-  padding: 2px 4px; /* 内边距 */
-  border-radius: 4px; /* 圆角 */
+  background-color: #FDE9A4;
+  /* 高亮背景色 */
+  cursor: pointer;
+  /* 鼠标指针样式 */
+  padding: 2px 4px;
+  /* 内边距 */
+  border-radius: 4px;
+  /* 圆角 */
 }
 </style>
